@@ -1,0 +1,826 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eksplorasi Desimal: Membandingkan & Mengurutkan</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1E3A8A;         /* Dark Royal Blue */
+            --primary-hover: #1E40AF;
+            --secondary: #065F46;       /* Deep Emerald Green */
+            --accent: #D97706;          /* Warm Amber */
+            --danger: #991B1B;          /* Dark Red */
+            --bg: #E2E8F0;              /* Cool Slate BG */
+            --card-bg: #FFFFFF;
+            --text-main: #0F172A;       
+            --text-muted: #334155;
+            --border-color: #475569;
+            --highlight: #FEF3C7;       /* Yellow highlight */
+            --border-radius: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            padding: 15px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: #FFFFFF;
+            text-align: center;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+            border-bottom: 4px solid #1E293B;
+        }
+
+        h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.2rem;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .credit-badge {
+            display: inline-block;
+            background-color: #0F172A;
+            color: #F8FAFC;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-top: 8px;
+            border: 1px solid #64748B;
+        }
+
+        /* Format Pecahan Vertikal Standar */
+        .fraction-display {
+            display: inline-flex;
+            flex-direction: column;
+            vertical-align: middle;
+            text-align: center;
+            font-size: 0.95rem;
+            margin: 0 4px;
+            font-weight: 800;
+            line-height: 1.1;
+        }
+
+        .fraction-display .num { 
+            border-bottom: 2px solid currentColor; 
+            padding: 0 4px; 
+            display: block;
+        }
+        
+        .fraction-display .den { 
+            padding: 0 4px; 
+            display: block;
+        }
+
+        /* Navigasi Tab */
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background-color: #FFFFFF;
+            color: var(--text-main);
+            border: 2px solid var(--border-color);
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+
+        .tab-btn:hover {
+            background-color: #F1F5F9;
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: #FFFFFF;
+            border-color: var(--primary);
+            box-shadow: 0 4px 8px rgba(30, 58, 138, 0.3);
+        }
+
+        /* Card Section */
+        .section-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            max-width: 960px;
+            margin: 0 auto 20px auto;
+            box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+            border: 2px solid #CBD5E1;
+            display: none;
+            width: 100%;
+        }
+
+        .section-card.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-family: 'Fredoka', sans-serif;
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            border-bottom: 3px solid var(--bg);
+            padding-bottom: 8px;
+        }
+
+        /* Inputs Container */
+        .input-group-container {
+            display: flex;
+            gap: 15px;
+            justify-content: center;
+            align-items: center;
+            flex-wrap: wrap;
+            background-color: #F8FAFC;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid #CBD5E1;
+            margin-bottom: 20px;
+        }
+
+        .input-box {
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+            align-items: center;
+        }
+
+        .input-box label {
+            font-weight: 800;
+            color: var(--text-main);
+            font-size: 1rem;
+        }
+
+        .input-box input {
+            padding: 10px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1.1rem;
+            font-weight: 800;
+            outline: none;
+            width: 110px;
+            text-align: center;
+            color: var(--primary);
+            background: #FFFFFF;
+        }
+
+        .input-box input:focus {
+            border-color: var(--primary-hover);
+            box-shadow: 0 0 0 3px rgba(30, 58, 138, 0.2);
+        }
+
+        /* Table Nilai Tempat */
+        .table-container {
+            overflow-x: auto;
+            margin-bottom: 25px;
+        }
+
+        .pv-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+            background-color: #FFFFFF;
+        }
+
+        .pv-table th, .pv-table td {
+            border: 2px solid #CBD5E1;
+            padding: 10px 8px;
+            text-align: center;
+            font-size: 1rem;
+            vertical-align: middle;
+        }
+
+        .pv-table th {
+            background-color: var(--primary);
+            color: #FFFFFF;
+            font-weight: 800;
+        }
+
+        .pv-table td {
+            font-weight: 800;
+        }
+
+        .diff-cell {
+            background-color: var(--highlight) !important;
+            border: 2px solid var(--accent) !important;
+            color: #78350F;
+            font-size: 1.2rem;
+        }
+
+        .badge-a { background: #DBEAFE; color: #1E3A8A; padding: 4px 10px; border-radius: 6px; }
+        .badge-b { background: #D1FAE5; color: #065F46; padding: 4px 10px; border-radius: 6px; }
+
+        /* Garis Bilangan */
+        .numberline-box {
+            background-color: #F8FAFC;
+            border: 2px solid #CBD5E1;
+            padding: 20px;
+            border-radius: 12px;
+            margin-bottom: 25px;
+        }
+
+        .numberline-title {
+            font-weight: 800;
+            color: var(--primary);
+            margin-bottom: 10px;
+            font-size: 1.1rem;
+        }
+
+        .numberline-wrapper {
+            position: relative;
+            width: 100%;
+            height: 140px;
+            margin-top: 10px;
+        }
+
+        /* Dynamic Result Cards */
+        .result-card {
+            background-color: #EFF6FF;
+            border-left: 6px solid var(--primary);
+            border: 2px solid #93C5FD;
+            padding: 20px;
+            border-radius: 12px;
+            text-align: center;
+        }
+
+        .result-comparison-text {
+            font-size: 2rem;
+            font-weight: 900;
+            color: var(--primary);
+            margin-bottom: 8px;
+        }
+
+        .explanation-text {
+            font-size: 1.05rem;
+            color: var(--text-muted);
+            font-weight: 700;
+            line-height: 1.6;
+        }
+
+        /* Order Sequence Display */
+        .sequence-arrow-container {
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            gap: 12px;
+            flex-wrap: wrap;
+            margin: 20px 0 10px 0;
+            background: #FFFFFF;
+            padding: 20px;
+            border-radius: 12px;
+            border: 2px solid var(--primary);
+        }
+
+        .seq-item {
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            background: #F1F5F9;
+            border: 2px solid var(--primary);
+            padding: 8px 16px;
+            border-radius: 10px;
+            min-width: 75px;
+        }
+
+        .seq-item .letter {
+            font-size: 1.3rem;
+            font-weight: 900;
+            color: var(--primary);
+        }
+
+        .seq-item .val {
+            font-size: 0.95rem;
+            font-weight: 800;
+            color: var(--text-muted);
+        }
+
+        .seq-arrow {
+            font-size: 1.5rem;
+            font-weight: 900;
+            color: var(--accent);
+        }
+
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
+        .btn-secondary { background-color: var(--secondary); }
+        .btn-secondary:hover { background-color: #047857; }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            margin-top: 20px;
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 0.95rem;
+            border-top: 2px solid #CBD5E1;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>⚖️ Eksplorasi Membandingkan & Mengurutkan Desimal</h1>
+        <p style="font-size: 1.1rem; font-weight: 700;">Media Pembelajaran Interaktif Matematika Kelas VI SD</p>
+        <div class="credit-badge">👨‍🏫 Dibuat oleh: Ikwan Wahyudi, S.Pd., M.Pd.</div>
+    </header>
+
+    <!-- Navigasi Tab -->
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="switchTab(0)">🏠 Beranda</button>
+        <button class="tab-btn" onclick="switchTab(1)">1. Membandingkan 2 Desimal</button>
+        <button class="tab-btn" onclick="switchTab(2)">2. Mengurutkan Banyak Desimal</button>
+    </div>
+
+    <!-- BERANDA -->
+    <div id="section-0" class="section-card active">
+        <h2 class="section-title">Selamat Datang di Modul Komparasi Desimal! 👋</h2>
+        <div style="line-height: 1.7; font-size: 1.1rem; color: var(--text-main);">
+            <p style="margin-bottom: 15px;">
+                Media interaktif ini membantu murid memahami cara <b>membandingkan</b> dua nilai desimal dan <b>mengurutkan</b> hingga 5 bilangan desimal secara visual.
+            </p>
+            
+            <div style="background-color: #F1F5F9; border-left: 5px solid var(--primary); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="color: var(--primary); margin-bottom: 8px;">🎯 Fitur Utama Media:</h3>
+                <ul style="margin-left: 20px;">
+                    <li><b>Tabel Nilai Tempat Otomatis:</b> Menganalisis digit puluhan, satuan, persepuluhan, perseratusan, dan perseribuan dari bilangan desimal.</li>
+                    <li><b>Sorotan Perbedaan:</b> Menunjukkan secara visual letak digit pertama yang berbeda dari kiri ke kanan.</li>
+                    <li><b>Garis Bilangan Interaktif:</b> Menampilkan posisi presisi bilangan desimal pada skala garis bilangan.</li>
+                    <li><b>Pengurut Desimal:</b> Membantu mengurutkan dari yang terkecil atau terbesar secara otomatis.</li>
+                </ul>
+            </div>
+
+            <div style="text-align: center; margin-top: 25px;">
+                <button class="btn btn-secondary" style="font-size: 1.2rem; padding: 12px 30px;" onclick="switchTab(1)">🚀 Mulai Belajar Sekarang</button>
+            </div>
+        </div>
+    </div>
+
+    <!-- BAGIAN 1: MEMBANDINGKAN -->
+    <div id="section-1" class="section-card">
+        <h2 class="section-title">Bagian 1: Membandingkan Dua Bilangan Desimal</h2>
+        
+        <p style="margin-bottom: 15px; font-weight: 700; color: var(--text-muted);">
+            Masukkan dua nilai desimal di bawah ini:
+        </p>
+
+        <div class="input-group-container">
+            <div class="input-box">
+                <label for="num-a">Bilangan A:</label>
+                <input type="text" id="num-a" value="1,45" oninput="processComparison()">
+            </div>
+            <div style="font-size: 1.8rem; font-weight: 900; color: var(--border-color); align-self: flex-end; margin-bottom: 6px;">VS</div>
+            <div class="input-box">
+                <label for="num-b">Bilangan B:</label>
+                <input type="text" id="num-b" value="1,425" oninput="processComparison()">
+            </div>
+        </div>
+
+        <!-- 1. Tabel Nilai Tempat -->
+        <h3 style="color:var(--primary); margin-bottom: 10px;">📊 1. Analisis Tabel Nilai Tempat</h3>
+        <div class="table-container">
+            <table class="pv-table">
+                <thead>
+                    <tr id="pv-thead-row">
+                        <!-- Header Diisi Otomatis via JS -->
+                    </tr>
+                </thead>
+                <tbody id="pv-tbody">
+                    <!-- Dinamis Diisi JavaScript -->
+                </tbody>
+            </table>
+        </div>
+
+        <!-- 2. Garis Bilangan Interaktif -->
+        <div class="numberline-box">
+            <div class="numberline-title">📍 2. Visualisasi Pada Garis Bilangan</div>
+            <div class="numberline-wrapper" id="numberline-container-1">
+                <!-- SVG Garis Bilangan Digambar via JavaScript -->
+            </div>
+        </div>
+
+        <!-- 3. Kesimpulan Perbandingan -->
+        <div class="result-card">
+            <div class="result-comparison-text" id="comparison-result-text">1,45 > 1,425</div>
+            <div class="explanation-text" id="comparison-explanation"></div>
+        </div>
+    </div>
+
+    <!-- BAGIAN 2: MENGURUTKAN (MAX 5 INPUT TERPISAH) -->
+    <div id="section-2" class="section-card">
+        <h2 class="section-title">Bagian 2: Mengurutkan Bilangan Desimal (Maksimal 5)</h2>
+        
+        <p style="margin-bottom: 15px; font-weight: 700; color: var(--text-muted);">
+            Isi nilai desimal pada kotak A hingga E (boleh dikosongkan jika kurang dari 5):
+        </p>
+
+        <div class="input-group-container">
+            <div class="input-box">
+                <label for="order-a">Bilangan A</label>
+                <input type="text" id="order-a" value="1,45" oninput="processOrdering()">
+            </div>
+            <div class="input-box">
+                <label for="order-b">Bilangan B</label>
+                <input type="text" id="order-b" value="1,425" oninput="processOrdering()">
+            </div>
+            <div class="input-box">
+                <label for="order-c">Bilangan C</label>
+                <input type="text" id="order-c" value="1,5" oninput="processOrdering()">
+            </div>
+            <div class="input-box">
+                <label for="order-d">Bilangan D</label>
+                <input type="text" id="order-d" value="1,38" oninput="processOrdering()">
+            </div>
+            <div class="input-box">
+                <label for="order-e">Bilangan E</label>
+                <input type="text" id="order-e" value="1,4" oninput="processOrdering()">
+            </div>
+        </div>
+
+        <div style="display:flex; justify-content:center; gap:12px; margin-bottom:20px; flex-wrap:wrap;">
+            <button class="btn" id="btn-sort-asc" onclick="setSortMode('asc')">⬆️ Terkecil ➔ Terbesar</button>
+            <button class="btn btn-secondary" id="btn-sort-desc" onclick="setSortMode('desc')">⬇️ Terbesar ➔ Terkecil</button>
+        </div>
+
+        <!-- Garis Bilangan Interaktif Multi-Pin -->
+        <div class="numberline-box">
+            <div class="numberline-title">📍 Visualisasi Sebaran Bilangan pada Garis Bilangan</div>
+            <div class="numberline-wrapper" id="numberline-container-2">
+                <!-- SVG Multi-Pin -->
+            </div>
+        </div>
+
+        <!-- Alur Urutan Huruf -->
+        <h3 style="color:var(--primary); margin-bottom:10px;">➡️ Urutan Tepat Bilangan Desimal:</h3>
+        <div class="sequence-arrow-container" id="sequence-output">
+            <!-- Diisi via JS: A ➔ B ➔ D dst. -->
+        </div>
+
+        <div id="sort-explanation-box" style="margin-top:15px; padding:15px; background:#FEF3C7; border-left:5px solid var(--accent); border-radius:8px; color:#78350F; font-weight:700;"></div>
+    </div>
+
+    <footer>
+        Media Pembelajaran Interaktif Matematika SD | Dibuat oleh: <b>Ikwan Wahyudi, S.Pd., M.Pd.</b>
+    </footer>
+
+    <script>
+        let currentSortMode = 'asc';
+
+        // TAB SWITCHING
+        function switchTab(tabIdx) {
+            document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx === tabIdx);
+            });
+
+            document.querySelectorAll('.section-card').forEach((card, idx) => {
+                card.classList.toggle('active', idx === tabIdx);
+            });
+
+            if (tabIdx === 1) processComparison();
+            if (tabIdx === 2) processOrdering();
+        }
+
+        // PARSE DECIMAL STRING TO FLOAT
+        function parseDecimal(str) {
+            if (!str) return NaN;
+            let clean = str.toString().trim().replace(',', '.');
+            let val = parseFloat(clean);
+            return isNaN(val) ? NaN : val;
+        }
+
+        // FORMAT FLOAT TO INDONESIAN STRING (comma separator)
+        function formatDecimal(num, decimals = -1) {
+            if (isNaN(num)) return '-';
+            if (decimals >= 0) {
+                return num.toFixed(decimals).replace('.', ',');
+            }
+            return num.toString().replace('.', ',');
+        }
+
+        // GET DIGITS AT PLACE VALUES
+        function getDigitAt(num, place) {
+            if (isNaN(num)) return 0;
+            let absNum = Math.abs(num);
+            let intPart = Math.floor(absNum);
+            let decStr = (absNum % 1).toFixed(3).substring(2); // 3 decimals
+
+            if (place === 'puluhan') return Math.floor((intPart % 100) / 10);
+            if (place === 'satuan') return intPart % 10;
+            if (place === 'persepuluhan') return parseInt(decStr[0]) || 0;
+            if (place === 'perseratusan') return parseInt(decStr[1]) || 0;
+            if (place === 'perseribuan') return parseInt(decStr[2]) || 0;
+            return 0;
+        }
+
+        // SECTION 1: COMPARISON LOGIC
+        function processComparison() {
+            let valA = parseDecimal(document.getElementById('num-a').value);
+            let valB = parseDecimal(document.getElementById('num-b').value);
+
+            if (isNaN(valA)) valA = 0;
+            if (isNaN(valB)) valB = 0;
+
+            // Check if Puluhan Column is Needed
+            let showPuluhan = (valA >= 10 || valB >= 10);
+
+            // Construct Table Header
+            let theadRow = document.getElementById('pv-thead-row');
+            let headerHTML = `<th>Bilangan</th>`;
+            
+            if (showPuluhan) {
+                headerHTML += `<th>Puluhan <br><small>(10)</small></th>`;
+            }
+            
+            headerHTML += `
+                <th>Satuan <br><small>(1)</small></th>
+                <th>Persepuluhan <br><span class="fraction-display"><span class="num">1</span><span class="den">10</span></span></th>
+                <th>Perseratusan <br><span class="fraction-display"><span class="num">1</span><span class="den">100</span></span></th>
+                <th>Perseribuan <br><span class="fraction-display"><span class="num">1</span><span class="den">1000</span></span></th>
+            `;
+            theadRow.innerHTML = headerHTML;
+
+            // Places array
+            let places = showPuluhan ? 
+                ['puluhan', 'satuan', 'persepuluhan', 'perseratusan', 'perseribuan'] : 
+                ['satuan', 'persepuluhan', 'perseratusan', 'perseribuan'];
+
+            let digitsA = places.map(p => getDigitAt(valA, p));
+            let digitsB = places.map(p => getDigitAt(valB, p));
+
+            // Find first difference
+            let diffIdx = -1;
+            for (let i = 0; i < places.length; i++) {
+                if (digitsA[i] !== digitsB[i]) {
+                    diffIdx = i;
+                    break;
+                }
+            }
+
+            // Render Body
+            let tbody = document.getElementById('pv-tbody');
+            let htmlA = `<tr><td><span class="badge-a">Bilangan A (${formatDecimal(valA)})</span></td>`;
+            let htmlB = `<tr><td><span class="badge-b">Bilangan B (${formatDecimal(valB)})</span></td>`;
+
+            for (let i = 0; i < places.length; i++) {
+                let isDiff = (i === diffIdx);
+                htmlA += `<td class="${isDiff ? 'diff-cell' : ''}">${digitsA[i]}</td>`;
+                htmlB += `<td class="${isDiff ? 'diff-cell' : ''}">${digitsB[i]}</td>`;
+            }
+            htmlA += `</tr>`;
+            htmlB += `</tr>`;
+
+            tbody.innerHTML = htmlA + htmlB;
+
+            // Number Line
+            renderSingleNumberLine('numberline-container-1', [
+                { label: 'A', value: valA, color: '#1E3A8A' },
+                { label: 'B', value: valB, color: '#065F46' }
+            ]);
+
+            // Results & Explanation
+            let resText = document.getElementById('comparison-result-text');
+            let expText = document.getElementById('comparison-explanation');
+
+            let formattedA = formatDecimal(valA);
+            let formattedB = formatDecimal(valB);
+
+            if (valA > valB) {
+                resText.innerHTML = `<b>${formattedA}</b> <span style="color:var(--accent);">&gt;</span> <b>${formattedB}</b>`;
+            } else if (valA < valB) {
+                resText.innerHTML = `<b>${formattedA}</b> <span style="color:var(--accent);">&lt;</span> <b>${formattedB}</b>`;
+            } else {
+                resText.innerHTML = `<b>${formattedA}</b> <span style="color:var(--secondary);">=</span> <b>${formattedB}</b>`;
+            }
+
+            const placeNames = {
+                'puluhan': 'Puluhan',
+                'satuan': 'Satuan',
+                'persepuluhan': 'Persepuluhan',
+                'perseratusan': 'Perseratusan',
+                'perseribuan': 'Perseribuan'
+            };
+
+            if (diffIdx === -1) {
+                expText.innerHTML = `Semua nilai tempat bernilai sama. Sehingga <b>${formattedA} sama dengan ${formattedB}</b>.`;
+            } else {
+                let pKey = places[diffIdx];
+                let pName = placeNames[pKey];
+                let dA = digitsA[diffIdx];
+                let dB = digitsB[diffIdx];
+
+                let sameStr = [];
+                for (let i = 0; i < diffIdx; i++) {
+                    sameStr.push(`${placeNames[places[i]]} sama (${digitsA[i]})`);
+                }
+                let prefix = sameStr.length > 0 ? sameStr.join(', ') + '. ' : '';
+
+                if (dA > dB) {
+                    expText.innerHTML = `${prefix}Pada nilai tempat <b>${pName}</b>, angka <b>${dA}</b> lebih besar dari <b>${dB}</b>. Maka <b>${formattedA} &gt; ${formattedB}</b>.`;
+                } else {
+                    expText.innerHTML = `${prefix}Pada nilai tempat <b>${pName}</b>, angka <b>${dA}</b> lebih kecil dari <b>${dB}</b>. Maka <b>${formattedA} &lt; ${formattedB}</b>.`;
+                }
+            }
+        }
+
+        // SECTION 2: ORDERING LOGIC
+        function setSortMode(mode) {
+            currentSortMode = mode;
+            document.getElementById('btn-sort-asc').style.opacity = mode === 'asc' ? '1' : '0.6';
+            document.getElementById('btn-sort-desc').style.opacity = mode === 'desc' ? '1' : '0.6';
+            processOrdering();
+        }
+
+        function processOrdering() {
+            let labels = ['A', 'B', 'C', 'D', 'E'];
+            let colors = ['#1E3A8A', '#065F46', '#D97706', '#991B1B', '#6D28D9'];
+            let items = [];
+
+            labels.forEach((lbl, idx) => {
+                let inputVal = document.getElementById(`order-${lbl.toLowerCase()}`).value;
+                let parsed = parseDecimal(inputVal);
+                if (!isNaN(parsed)) {
+                    items.push({
+                        label: lbl,
+                        value: parsed,
+                        color: colors[idx]
+                    });
+                }
+            });
+
+            if (items.length < 2) {
+                document.getElementById('sequence-output').innerHTML = `<p style="color:var(--danger); font-weight:800;">Masukkan minimal 2 nilai bilangan desimal untuk diurutkan.</p>`;
+                document.getElementById('numberline-container-2').innerHTML = '';
+                return;
+            }
+
+            // Render Multi-Pin NumberLine
+            renderSingleNumberLine('numberline-container-2', items);
+
+            // Sort Items
+            let sortedItems = [...items].sort((a, b) => {
+                return currentSortMode === 'asc' ? a.value - b.value : b.value - a.value;
+            });
+
+            // Render Sequence Output A ➔ B ➔ D dst.
+            let seqContainer = document.getElementById('sequence-output');
+            let seqHTML = '';
+
+            sortedItems.forEach((item, idx) => {
+                seqHTML += `
+                    <div class="seq-item" style="border-color:${item.color};">
+                        <span class="letter" style="color:${item.color}">${item.label}</span>
+                        <span class="val">${formatDecimal(item.value)}</span>
+                    </div>
+                `;
+
+                if (idx < sortedItems.length - 1) {
+                    seqHTML += `<div class="seq-arrow">➔</div>`;
+                }
+            });
+
+            seqContainer.innerHTML = seqHTML;
+
+            // Explanation Text
+            let expBox = document.getElementById('sort-explanation-box');
+            let dirText = currentSortMode === 'asc' ? 'terkecil ke terbesar ⬆️' : 'terbesar ke terkecil ⬇️';
+            let letterSequenceStr = sortedItems.map(i => `<b>${i.label}</b> (${formatDecimal(i.value)})`).join(' ➔ ');
+            expBox.innerHTML = `Urutan bilangan desimal dari <b>${dirText}</b> adalah: <br><span style="font-size:1.1rem; line-height:1.8;">${letterSequenceStr}</span>`;
+        }
+
+        // UNIVERSAL SVG NUMBER LINE RENDERER
+        function renderSingleNumberLine(containerId, points) {
+            let container = document.getElementById(containerId);
+            let width = container.clientWidth || 800;
+            let height = 130;
+
+            if (points.length === 0) {
+                container.innerHTML = '';
+                return;
+            }
+
+            let values = points.map(p => p.value);
+            let minVal = Math.min(...values);
+            let maxVal = Math.max(...values);
+
+            let range = maxVal - minVal;
+            let start, end;
+
+            if (range === 0) {
+                start = Math.max(0, minVal - 0.1);
+                end = minVal + 0.1;
+            } else {
+                let pad = range * 0.25;
+                start = Math.max(0, minVal - pad);
+                end = maxVal + pad;
+            }
+
+            let ticksCount = 5;
+            let tickStep = (end - start) / (ticksCount - 1);
+
+            let getX = (val) => {
+                return 55 + ((val - start) / (end - start)) * (width - 110);
+            };
+
+            let svg = `<svg width="100%" height="${height}" viewBox="0 0 ${width} ${height}" xmlns="http://www.w3.org/2000/svg">`;
+            
+            // Main Line
+            svg += `<line x1="30" y1="80" x2="${width - 30}" y2="80" stroke="#1E293B" stroke-width="4" stroke-linecap="round"/>`;
+
+            // Ticks
+            for (let i = 0; i < ticksCount; i++) {
+                let tVal = start + i * tickStep;
+                let tx = getX(tVal);
+                svg += `<line x1="${tx}" y1="73" x2="${tx}" y2="87" stroke="#475569" stroke-width="2"/>`;
+                svg += `<text x="${tx}" y="108" font-family="Nunito" font-size="12" font-weight="800" fill="#475569" text-anchor="middle">${formatDecimal(tVal, 2)}</text>`;
+            }
+
+            // Pins Positioning & Staggering to prevent overlap
+            let sortedPoints = [...points].map(p => ({...p, x: getX(p.value)})).sort((a,b) => a.x - b.x);
+
+            // Assign vertical tiers for overlapping points
+            let tiers = [];
+            sortedPoints.forEach((p, idx) => {
+                let tier = 0;
+                for (let prevIdx = 0; prevIdx < idx; prevIdx++) {
+                    let prevP = sortedPoints[prevIdx];
+                    if (Math.abs(p.x - prevP.x) < 28 && tiers[prevIdx] === tier) {
+                        tier++;
+                    }
+                }
+                tiers[idx] = tier;
+            });
+
+            sortedPoints.forEach((p, idx) => {
+                let tier = tiers[idx];
+                let pinY = 40 - (tier * 22);
+
+                svg += `
+                    <g transform="translate(${p.x}, ${pinY})">
+                        <circle cx="0" cy="0" r="13" fill="${p.color}" stroke="#FFFFFF" stroke-width="2" style="filter: drop-shadow(0px 2px 3px rgba(0,0,0,0.2));"/>
+                        <text x="0" y="4" font-family="Nunito" font-size="11" font-weight="900" fill="#FFFFFF" text-anchor="middle">${p.label}</text>
+                        <line x1="0" y1="13" x2="0" y2="${80 - pinY}" stroke="${p.color}" stroke-width="2" stroke-dasharray="3,3"/>
+                    </g>
+                `;
+            });
+
+            svg += `</svg>`;
+            container.innerHTML = svg;
+        }
+
+        // Window Resize Listener
+        window.addEventListener('resize', () => {
+            if (document.getElementById('section-1').classList.contains('active')) processComparison();
+            if (document.getElementById('section-2').classList.contains('active')) processOrdering();
+        });
+
+        // Initial Executions
+        processComparison();
+        processOrdering();
+    </script>
+</body>
+</html>
