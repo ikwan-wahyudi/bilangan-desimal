@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Eksplorasi Bilangan Desimal - Media Pembelajaran Interaktif</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@600;700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary: #1E3A8A;         /* Dark Royal Blue */
+            --primary-hover: #1E40AF;
+            --secondary: #065F46;       /* Deep Emerald Green */
+            --accent: #D97706;          /* Warm Amber */
+            --danger: #991B1B;          /* Dark Red */
+            --bg: #E2E8F0;              /* Cool Slate BG for strong contrast */
+            --card-bg: #FFFFFF;
+            --text-main: #0F172A;       /* Almost Black for maximum readability */
+            --text-muted: #334155;     /* Dark Slate Text */
+            --border-color: #475569;   /* High contrast border */
+            --border-radius: 14px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
+        }
+
+        body {
+            background-color: var(--bg);
+            color: var(--text-main);
+            padding: 15px;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+        }
+
+        header {
+            background-color: var(--primary);
+            color: #FFFFFF;
+            text-align: center;
+            padding: 20px;
+            border-radius: var(--border-radius);
+            margin-bottom: 20px;
+            box-shadow: 0 4px 12px rgba(15, 23, 42, 0.15);
+            border-bottom: 4px solid #1E293B;
+        }
+
+        h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.2rem;
+            letter-spacing: 0.5px;
+            margin-bottom: 4px;
+        }
+
+        .credit-badge {
+            display: inline-block;
+            background-color: #0F172A;
+            color: #F8FAFC;
+            padding: 6px 16px;
+            border-radius: 20px;
+            font-size: 0.95rem;
+            font-weight: 700;
+            margin-top: 8px;
+            border: 1px solid #64748B;
+        }
+
+        /* Navigasi Tab */
+        .tab-container {
+            display: flex;
+            justify-content: center;
+            gap: 10px;
+            margin-bottom: 20px;
+            flex-wrap: wrap;
+        }
+
+        .tab-btn {
+            background-color: #FFFFFF;
+            color: var(--text-main);
+            border: 2px solid var(--border-color);
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            font-size: 1rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.08);
+        }
+
+        .tab-btn:hover:not(.disabled) {
+            background-color: #F1F5F9;
+            border-color: var(--primary);
+            transform: translateY(-2px);
+        }
+
+        .tab-btn.active {
+            background-color: var(--primary);
+            color: #FFFFFF;
+            border-color: var(--primary);
+            box-shadow: 0 4px 8px rgba(30, 58, 138, 0.3);
+        }
+
+        .tab-btn.disabled {
+            opacity: 0.5;
+            cursor: not-allowed;
+            background-color: #CBD5E1;
+            border-color: #94A3B8;
+        }
+
+        /* Card Sections */
+        .section-card {
+            background: var(--card-bg);
+            border-radius: var(--border-radius);
+            padding: 25px;
+            max-width: 920px;
+            margin: 0 auto 20px auto;
+            box-shadow: 0 6px 18px rgba(15, 23, 42, 0.08);
+            border: 2px solid #CBD5E1;
+            display: none;
+            width: 100%;
+        }
+
+        .section-card.active {
+            display: block;
+            animation: fadeIn 0.3s ease-in-out;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(6px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .section-title {
+            font-family: 'Fredoka', sans-serif;
+            color: var(--primary);
+            margin-bottom: 15px;
+            font-size: 1.6rem;
+            border-bottom: 3px solid var(--bg);
+            padding-bottom: 8px;
+        }
+
+        /* Syarat Status Box */
+        .status-box {
+            background-color: #EFF6FF;
+            border: 2px solid #3B82F6;
+            border-left: 6px solid var(--primary);
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 20px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            flex-wrap: wrap;
+            gap: 10px;
+        }
+
+        .badge {
+            padding: 6px 14px;
+            border-radius: 20px;
+            font-size: 0.9rem;
+            font-weight: 800;
+        }
+
+        .badge-pending { background: #FEF3C7; color: #92400E; border: 1px solid #F59E0B; }
+        .badge-success { background: #D1FAE5; color: #065F46; border: 1px solid #10B981; }
+
+        /* Controls & Inputs */
+        .controls {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 20px;
+            align-items: center;
+            flex-wrap: wrap;
+            background-color: #F8FAFC;
+            padding: 15px;
+            border-radius: 10px;
+            border: 1px solid #CBD5E1;
+        }
+
+        label {
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        select, input[type="number"], input[type="range"] {
+            padding: 8px 12px;
+            border: 2px solid var(--border-color);
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 700;
+            outline: none;
+            background-color: #FFFFFF;
+            color: var(--text-main);
+        }
+
+        /* Grids */
+        .grid-container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin: 20px 0;
+        }
+
+        .grid-10 {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 4px;
+            width: 100%;
+            max-width: 500px;
+            height: 65px;
+            background-color: #334155;
+            padding: 6px;
+            border-radius: 10px;
+        }
+
+        .grid-100 {
+            display: grid;
+            grid-template-columns: repeat(10, 1fr);
+            gap: 2px;
+            width: 320px;
+            height: 320px;
+            background-color: #334155;
+            padding: 6px;
+            border-radius: 10px;
+        }
+
+        .grid-cell {
+            background-color: #FFFFFF;
+            border-radius: 2px;
+            transition: background-color 0.2s ease;
+        }
+
+        .grid-cell.filled {
+            background-color: var(--accent);
+        }
+
+        .result-box {
+            text-align: center;
+            background: #F1F5F9;
+            padding: 15px;
+            border-radius: 12px;
+            border: 2px solid var(--border-color);
+            margin-top: 15px;
+            font-size: 1.3rem;
+            font-weight: 800;
+            color: var(--text-main);
+        }
+
+        /* History Table */
+        .history-box {
+            margin-top: 25px;
+            background: #F8FAFC;
+            border: 2px solid #CBD5E1;
+            padding: 15px;
+            border-radius: 10px;
+        }
+
+        .history-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin-top: 10px;
+        }
+
+        .history-table th, .history-table td {
+            border: 1px solid #CBD5E1;
+            padding: 8px 12px;
+            text-align: center;
+            font-size: 0.95rem;
+        }
+
+        .history-table th {
+            background-color: var(--primary);
+            color: white;
+            font-weight: 800;
+        }
+
+        /* Quiz Box */
+        .quiz-box {
+            margin-top: 25px;
+            padding: 20px;
+            background: #FFFBEB;
+            border-radius: 12px;
+            border: 2px solid #F59E0B;
+        }
+
+        .feedback-card {
+            margin-top: 15px;
+            padding: 12px 15px;
+            border-radius: 8px;
+            font-weight: 700;
+            display: none;
+        }
+
+        .feedback-card.correct {
+            background-color: #D1FAE5;
+            color: #065F46;
+            border: 2px solid #10B981;
+        }
+
+        .feedback-card.wrong {
+            background-color: #FEE2E2;
+            color: #991B1B;
+            border: 2px solid #EF4444;
+        }
+
+        /* Buttons */
+        .btn {
+            background-color: var(--primary);
+            color: white;
+            border: none;
+            padding: 10px 20px;
+            border-radius: 8px;
+            font-weight: 800;
+            font-size: 1rem;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 3px 6px rgba(0,0,0,0.1);
+        }
+
+        .btn:hover { background-color: var(--primary-hover); transform: translateY(-1px); }
+        .btn-secondary { background-color: var(--secondary); }
+        .btn-secondary:hover { background-color: #047857; }
+        .btn-accent { background-color: var(--accent); color: #0F172A; }
+        .btn-accent:hover { background-color: #B45309; color: white; }
+
+        /* Step Visualizer Section 2 */
+        .step-container {
+            border: 2px solid #CBD5E1;
+            border-radius: 12px;
+            padding: 20px;
+            margin-top: 20px;
+            background-color: #F8FAFC;
+        }
+
+        .step-navigation {
+            display: flex;
+            justify-content: space-between;
+            margin-top: 20px;
+        }
+
+        .abstraction-card {
+            background-color: #FEF3C7;
+            border-left: 6px solid var(--accent);
+            padding: 15px;
+            border-radius: 8px;
+            margin-top: 15px;
+            font-size: 1.05rem;
+            color: #78350F;
+            border: 1px solid #FDE68A;
+        }
+
+        .fraction-display {
+            display: inline-flex;
+            flex-direction: column;
+            vertical-align: middle;
+            text-align: center;
+            font-size: 1.2rem;
+            margin: 0 4px;
+            font-weight: 800;
+        }
+
+        .fraction-display .num { border-bottom: 2px solid currentColor; padding: 0 4px; }
+        .fraction-display .den { padding: 0 4px; }
+
+        footer {
+            text-align: center;
+            padding: 15px;
+            margin-top: 20px;
+            color: var(--text-muted);
+            font-weight: 700;
+            font-size: 0.95rem;
+            border-top: 2px solid #CBD5E1;
+        }
+    </style>
+</head>
+<body>
+
+    <header>
+        <h1>✨ Eksplorasi & Visualisasi Desimal ✨</h1>
+        <p style="font-size: 1.1rem; font-weight: 700;">Media Pembelajaran Interaktif Matematika Kelas VI SD</p>
+        <div class="credit-badge">👨‍🏫 Dibuat oleh: Ikwan Wahyudi, S.Pd., M.Pd.</div>
+    </header>
+
+    <div class="tab-container">
+        <button class="tab-btn active" onclick="switchTab(0)">🏠 Beranda</button>
+        <button class="tab-btn" onclick="switchTab(1)">1. Concept Grid Desimal</button>
+        <button class="tab-btn disabled" id="tab-2" onclick="switchTab(2)">🔒 2. Mengubah Penyebut</button>
+    </div>
+
+    <div id="section-0" class="section-card active">
+        <h2 class="section-title">Selamat Datang di Petualangan Desimal! 👋</h2>
+        <div style="line-height: 1.7; font-size: 1.1rem; color: var(--text-main);">
+            <p style="margin-bottom: 15px;">
+                Media Pembelajaran Interaktif ini dirancang khusus untuk membantu siswa Sekolah Dasar memahami konsep <b>Bilangan Desimal</b> secara visual, konkret, dan menyenangkan.
+            </p>
+            
+            <div style="background-color: #F1F5F9; border-left: 5px solid var(--primary); padding: 15px; border-radius: 8px; margin-bottom: 20px;">
+                <h3 style="color: var(--primary); margin-bottom: 8px;">🎯 Tujuan Pembelajaran:</h3>
+                <ul style="margin-left: 20px;">
+                    <li>Memahami hubungan pecahan persepuluhan & perseratusan dengan bentuk desimal melalui grid visual.</li>
+                    <li>Mengubah pecahan biasa menjadi pecahan desimal dengan mengubah penyebut menjadi per 10, 100, atau 1000 secara bertahap.</li>
+                </ul>
+            </div>
+
+            <div style="background-color: #FEF3C7; border-left: 5px solid var(--accent); padding: 15px; border-radius: 8px; margin-bottom: 20px; color: #78350F;">
+                <h3 style="margin-bottom: 8px;">🔑 Syarat Membuka Bagian 2:</h3>
+                <p>Untuk melangkah ke materi <b>Bagian 2</b>, kamu harus:</p>
+                <ol style="margin-left: 20px;">
+                    <li>Melakukan minimal <b>3 kali simulasi</b> di Bagian 1.</li>
+                    <li>Menjawab <b>Pertanyaan Pemahaman</b> dengan benar di Bagian 1.</li>
+                </ol>
+            </div>
+
+            <div style="text-align: center; margin-top: 25px;">
+                <button class="btn btn-secondary" style="font-size: 1.2rem; padding: 12px 30px;" onclick="switchTab(1)">🚀 Mulai Belajar Sekarang</button>
+            </div>
+        </div>
+    </div>
+
+    <div id="section-1" class="section-card">
+        <h2 class="section-title">Bagian 1: Mengenal Desimal Lewat Grid Visual</h2>
+        
+        <div class="status-box">
+            <div>
+                <strong>Syarat Membuka Bagian 2:</strong>
+                <div>• Simulasi dilakukan: <span id="sim-count" style="font-weight:900; color:var(--primary);">0</span>/3 kali</div>
+                <div>• Kuis Pemahaman: <span id="quiz-status" style="font-weight:900; color:var(--danger);">Belum Selesai</span></div>
+            </div>
+            <div id="unlock-badge" class="badge badge-pending">🔒 Terkunci</div>
+        </div>
+
+        <div class="controls">
+            <label for="grid-type">Pilih Jenis Grid:</label>
+            <select id="grid-type" onchange="initGrid1()">
+                <option value="10">Grid Persepuluhan (1/10)</option>
+                <option value="100">Grid Perseratusan (1/100)</option>
+            </select>
+
+            <label for="grid-slider">Jumlah Petak Diarsir:</label>
+            <input type="range" id="grid-slider" min="0" max="10" value="3" oninput="updateGrid1()">
+            <span id="slider-val" style="font-weight:900; font-size:1.3rem; color:var(--primary);">3</span>
+        </div>
+
+        <div class="grid-container">
+            <div id="grid-display-1" class="grid-10"></div>
+        </div>
+
+        <div class="result-box">
+            Bentuk Pecahan: <span id="frac-val-1" class="fraction-display"><span class="num">3</span><span class="den">10</span></span>
+            &nbsp; | &nbsp; 
+            Nilai Desimal: <span id="dec-val-1" style="color:var(--primary); font-size:1.7rem;">0,3</span>
+        </div>
+
+        <div style="text-align: center; margin-top: 15px;">
+            <button class="btn btn-secondary" onclick="recordSimulation()">💾 Simpan Ke Riwayat Simulasi</button>
+        </div>
+
+        <div class="history-box">
+            <h3 style="color:var(--primary); margin-bottom:8px;">📜 Riwayat Simulasi Siswa</h3>
+            <table class="history-table">
+                <thead>
+                    <tr>
+                        <th>No</th>
+                        <th>Jenis Grid</th>
+                        <th>Petak Diarsir</th>
+                        <th>Pecahan</th>
+                        <th>Nilai Desimal</th>
+                    </tr>
+                </thead>
+                <tbody id="history-tbody">
+                    <tr>
+                        <td colspan="5" style="color:#64748B;">Belum ada riwayat simulasi. Klik tombol simpan di atas!</td>
+                    </tr>
+                </tbody>
+            </table>
+        </div>
+
+        <div class="quiz-box">
+            <h3 style="color:#78350F; margin-bottom:10px;">❓ Pertanyaan Pemahaman</h3>
+            <p id="quiz-question-text" style="font-size: 1.1rem; margin-bottom: 12px; font-weight:700;"></p>
+            
+            <div style="display: flex; gap: 10px; align-items: center; flex-wrap: wrap;">
+                <input type="number" id="quiz-answer" step="0.01" placeholder="Contoh: 0.45" style="width: 160px;">
+                <button class="btn" onclick="checkQuiz()">Kirim Jawaban</button>
+            </div>
+
+            <div id="quiz-feedback-card" class="feedback-card"></div>
+        </div>
+    </div>
+
+    <div id="section-2" class="section-card">
+        <h2 class="section-title">Bagian 2: Mengubah Penyebut Pecahan Biasa ke Desimal</h2>
+        
+        <div class="controls">
+            <label for="sec2-den">Pilih Penyebut Pecahan:</label>
+            <select id="sec2-den" onchange="updateSec2Inputs()">
+                <option value="2">2</option>
+                <option value="4" selected>4</option>
+                <option value="5">5</option>
+                <option value="20">20</option>
+                <option value="25">25</option>
+                <option value="50">50</option>
+            </select>
+
+            <label for="sec2-num">Pembilang (Maks = Penyebut):</label>
+            <input type="number" id="sec2-num" min="1" max="4" value="1" onchange="resetSec2Step()">
+            
+            <button class="btn" onclick="startSec2Visual()">Tampilkan Visualisasi</button>
+        </div>
+
+        <div class="step-container">
+            <h3 id="step-title" style="color:var(--primary)">Langkah 1: Bentuk Pecahan Awal</h3>
+            <p id="step-desc" style="margin: 10px 0; font-size:1.05rem;">Ini adalah gambar visual bentuk pecahan awal yang diatur.</p>
+            
+            <div id="step-visual-area" style="min-height: 220px; display:flex; justify-content:center; align-items:center; flex-direction:column; gap:15px; padding:15px 0;"></div>
+
+            <div id="abstraction-area" class="abstraction-card" style="display:none;">
+                <strong>💡 Abstraksi Simbolik (Aturan Utama):</strong>
+                <div id="abstraction-text" style="margin-top:6px;"></div>
+            </div>
+
+            <div class="step-navigation">
+                <button class="btn" id="btn-prev-step" onclick="changeStep(-1)" disabled>← Kembali</button>
+                <span id="step-indicator" style="align-self: center; font-weight: 800; font-size: 1.1rem; color:var(--primary);">Langkah 1 dari 4</span>
+                <button class="btn" id="btn-next-step" onclick="changeStep(1)">Lanjut →</button>
+            </div>
+        </div>
+    </div>
+
+    <footer>
+        Media Pembelajaran Interaktif Matematika SD | Dibuat oleh: <b>Ikwan Wahyudi, S.Pd., M.Pd.</b>
+    </footer>
+
+    <script>
+        // State Application
+        let simCount = 0;
+        let quizPassed = false;
+        let isUnlocked = false;
+        let currentStep = 1;
+        let historyData = [];
+
+        // Dynamic Quiz State
+        let currentQuiz = { total: 100, shaded: 45, targetDecimal: 0.45 };
+
+        // Grid Configuration (Tanpa angka 8)
+        const GRID_CONFIGS = {
+            2:  { base: 10,   origR: 2, origC: 1,  transR: 2,  transC: 5,   scaleR: 1, scaleC: 5 },
+            4:  { base: 100,  origR: 2, origC: 2,  transR: 10, transC: 10,  scaleR: 5, scaleC: 5 },
+            5:  { base: 10,   origR: 1, origC: 5,  transR: 2,  transC: 5,   scaleR: 2, scaleC: 1 },
+            20: { base: 100,  origR: 2, origC: 10, transR: 10, transC: 10,  scaleR: 5, scaleC: 1 },
+            25: { base: 100,  origR: 5, origC: 5,  transR: 10, transC: 10,  scaleR: 2, scaleC: 2 },
+            50: { base: 100,  origR: 5, origC: 10, transR: 10, transC: 10,  scaleR: 2, scaleC: 1 }
+        };
+
+        // TAB SWITCHING
+        function switchTab(tabIdx) {
+            if (tabIdx === 2 && !isUnlocked) {
+                alert('Akses Terkunci! Selesaikan minimal 3 kali simulasi dan jawab kuis dengan benar di Bagian 1 terlebih dahulu.');
+                return;
+            }
+
+            document.querySelectorAll('.tab-btn').forEach((btn, idx) => {
+                btn.classList.toggle('active', idx === tabIdx);
+            });
+
+            document.querySelectorAll('.section-card').forEach((card, idx) => {
+                card.classList.toggle('active', idx === tabIdx);
+            });
+
+            if (tabIdx === 2) resetSec2Step();
+        }
+
+        // SECTION 1 LOGIC
+        function initGrid1() {
+            const type = parseInt(document.getElementById('grid-type').value);
+            const slider = document.getElementById('grid-slider');
+            slider.max = type;
+            if (parseInt(slider.value) > type) slider.value = type;
+            updateGrid1();
+        }
+
+        function updateGrid1() {
+            const type = parseInt(document.getElementById('grid-type').value);
+            const val = parseInt(document.getElementById('grid-slider').value);
+            document.getElementById('slider-val').innerText = val;
+
+            const gridDisplay = document.getElementById('grid-display-1');
+            gridDisplay.className = type === 10 ? 'grid-10' : 'grid-100';
+            gridDisplay.innerHTML = '';
+
+            for (let i = 0; i < type; i++) {
+                const cell = document.createElement('div');
+                cell.className = 'grid-cell' + (i < val ? ' filled' : '');
+                gridDisplay.appendChild(cell);
+            }
+
+            document.getElementById('frac-val-1').innerHTML = `<span class="num">${val}</span><span class="den">${type}</span>`;
+            let dec = (val / type).toFixed(type === 10 ? 1 : 2).replace('.', ',');
+            document.getElementById('dec-val-1').innerText = dec;
+        }
+
+        function recordSimulation() {
+            const type = parseInt(document.getElementById('grid-type').value);
+            const val = parseInt(document.getElementById('grid-slider').value);
+            const dec = (val / type).toFixed(type === 10 ? 1 : 2).replace('.', ',');
+
+            simCount++;
+            document.getElementById('sim-count').innerText = simCount;
+
+            historyData.push({
+                no: simCount,
+                grid: `Grid ${type}`,
+                shaded: `${val} petak`,
+                frac: `${val}/${type}`,
+                dec: dec
+            });
+
+            renderHistoryTable();
+            checkUnlockConditions();
+        }
+
+        function renderHistoryTable() {
+            const tbody = document.getElementById('history-tbody');
+            if (historyData.length === 0) return;
+
+            tbody.innerHTML = '';
+            historyData.forEach(item => {
+                const tr = document.createElement('tr');
+                tr.innerHTML = `
+                    <td><b>${item.no}</b></td>
+                    <td>${item.grid}</td>
+                    <td>${item.shaded}</td>
+                    <td><span class="fraction-display"><span class="num">${item.frac.split('/')[0]}</span><span class="den">${item.frac.split('/')[1]}</span></span></td>
+                    <td style="font-weight:800; color:var(--primary);">${item.dec}</td>
+                `;
+                tbody.appendChild(tr);
+            });
+        }
+
+        // DYNAMIC QUIZ LOGIC
+        function generateNewQuiz() {
+            const isGrid100 = Math.random() > 0.3; // 70% chance of grid 100
+            if (isGrid100) {
+                const shaded = Math.floor(Math.random() * 90) + 5; // 5 to 95
+                currentQuiz = {
+                    total: 100,
+                    shaded: shaded,
+                    targetDecimal: parseFloat((shaded / 100).toFixed(2))
+                };
+            } else {
+                const shaded = Math.floor(Math.random() * 9) + 1; // 1 to 9
+                currentQuiz = {
+                    total: 10,
+                    shaded: shaded,
+                    targetDecimal: parseFloat((shaded / 10).toFixed(1))
+                };
+            }
+
+            document.getElementById('quiz-question-text').innerHTML = 
+                `Jika sebuah grid <b>${currentQuiz.total}</b> diarsir sebanyak <b>${currentQuiz.shaded} petak</b>, berapakah nilai desimalnya?`;
+            document.getElementById('quiz-answer').value = '';
+        }
+
+        function checkQuiz() {
+            const userValStr = document.getElementById('quiz-answer').value.replace(',', '.');
+            const userVal = parseFloat(userValStr);
+            const feedbackCard = document.getElementById('quiz-feedback-card');
+
+            if (isNaN(userVal)) {
+                alert('Tolong masukkan angka jawaban desimal!');
+                return;
+            }
+
+            feedbackCard.style.display = 'block';
+
+            if (Math.abs(userVal - currentQuiz.targetDecimal) < 0.001) {
+                feedbackCard.className = 'feedback-card correct';
+                feedbackCard.innerHTML = `🎉 <b>Luar Biasa, Jawaban Benar!</b> (${currentQuiz.shaded}/${currentQuiz.total} = ${currentQuiz.targetDecimal.toString().replace('.', ',')})`;
+                quizPassed = true;
+                document.getElementById('quiz-status').innerText = "Selesai (Benar)";
+                document.getElementById('quiz-status').style.color = "var(--secondary)";
+            } else {
+                feedbackCard.className = 'feedback-card wrong';
+                let correctFormatted = currentQuiz.targetDecimal.toString().replace('.', ',');
+                feedbackCard.innerHTML = `
+                    ❌ <b>Jawaban Kurang Tepat.</b><br>
+                    Jawaban yang benar untuk <b>${currentQuiz.shaded}/${currentQuiz.total}</b> adalah <b>${correctFormatted}</b>.<br><br>
+                    <i>Jangan berkecil hati! Cobalah pertanyaan baru di bawah ini:</i>
+                `;
+                quizPassed = false;
+                // Generate Pertanyaan Baru Secara Otomatis
+                setTimeout(() => {
+                    generateNewQuiz();
+                }, 3500);
+            }
+
+            checkUnlockConditions();
+        }
+
+        function checkUnlockConditions() {
+            if (simCount >= 3 && quizPassed) {
+                isUnlocked = true;
+                const badge = document.getElementById('unlock-badge');
+                badge.className = 'badge badge-success';
+                badge.innerText = '🔓 Terbuka!';
+
+                const tab2 = document.getElementById('tab-2');
+                tab2.classList.remove('disabled');
+                tab2.innerText = '2. Mengubah Penyebut';
+            }
+        }
+
+        // SECTION 2 LOGIC
+        function updateSec2Inputs() {
+            const den = parseInt(document.getElementById('sec2-den').value);
+            const numInput = document.getElementById('sec2-num');
+            numInput.max = den;
+            if (parseInt(numInput.value) > den) numInput.value = den;
+            resetSec2Step();
+        }
+
+        function resetSec2Step() {
+            currentStep = 1;
+            renderStep2();
+        }
+
+        function changeStep(delta) {
+            currentStep += delta;
+            if (currentStep < 1) currentStep = 1;
+            if (currentStep > 4) currentStep = 4;
+            renderStep2();
+        }
+
+        function startSec2Visual() {
+            currentStep = 1;
+            renderStep2();
+        }
+
+        function renderOriginalGrid(den, num, color, size = 180) {
+            const cfg = GRID_CONFIGS[den];
+            let html = `<div style="display:grid; grid-template-rows:repeat(${cfg.origR}, 1fr); grid-template-columns:repeat(${cfg.origC}, 1fr); gap:3px; width:${size}px; height:${size}px; background:#334155; padding:4px; border-radius:8px; box-shadow:0 3px 6px rgba(0,0,0,0.15);">`;
+            
+            for (let r = 0; r < cfg.origR; r++) {
+                for (let c = 0; c < cfg.origC; c++) {
+                    let cellIdx = r * cfg.origC + c;
+                    let bg = cellIdx < num ? color : '#FFFFFF';
+                    html += `<div style="background:${bg}; border-radius:3px;"></div>`;
+                }
+            }
+            html += `</div>`;
+            return html;
+        }
+
+        function renderTransformedGrid(den, num, color, size = 180) {
+            const cfg = GRID_CONFIGS[den];
+            let width = size;
+            let height = size;
+
+            let html = `<div style="display:grid; grid-template-rows:repeat(${cfg.transR}, 1fr); grid-template-columns:repeat(${cfg.transC}, 1fr); gap:1.5px; width:${width}px; height:${height}px; background:#334155; padding:4px; border-radius:8px; box-shadow:0 3px 6px rgba(0,0,0,0.15);">`;
+
+            for (let tr = 0; tr < cfg.transR; tr++) {
+                for (let tc = 0; tc < cfg.transC; tc++) {
+                    let origR = Math.floor(tr / cfg.scaleR);
+                    let origC = Math.floor(tc / cfg.scaleC);
+                    let origCellIdx = origR * cfg.origC + origC;
+                    let bg = origCellIdx < num ? color : '#FFFFFF';
+                    html += `<div style="background:${bg}; border-radius:1px;"></div>`;
+                }
+            }
+            html += `</div>`;
+            return html;
+        }
+
+        function renderStep2() {
+            const den = parseInt(document.getElementById('sec2-den').value);
+            const num = parseInt(document.getElementById('sec2-num').value);
+            const cfg = GRID_CONFIGS[den];
+            const targetBase = cfg.base;
+            const multiplier = targetBase / den;
+            const newNum = num * multiplier;
+
+            const titleEl = document.getElementById('step-title');
+            const descEl = document.getElementById('step-desc');
+            const areaEl = document.getElementById('step-visual-area');
+            const absArea = document.getElementById('abstraction-area');
+            const absText = document.getElementById('abstraction-text');
+
+            document.getElementById('btn-prev-step').disabled = (currentStep === 1);
+            document.getElementById('btn-next-step').disabled = (currentStep === 4);
+            document.getElementById('step-indicator').innerText = `Langkah ${currentStep} dari 4`;
+
+            absArea.style.display = 'none';
+
+            if (currentStep === 1) {
+                titleEl.innerText = "Langkah 1: Visual Pecahan Awal";
+                descEl.innerText = `Menampilkan visual pecahan awal: ${num}/${den}. Persegi ini dibagi menjadi ${den} bagian sama besar.`;
+                areaEl.innerHTML = renderOriginalGrid(den, num, "var(--primary)");
+            } else if (currentStep === 2) {
+                titleEl.innerText = `Langkah 2: Mengubah Grid menjadi Per-${targetBase}`;
+                descEl.innerText = `Setiap bagian dibagi lagi secara proporsional sehingga total petak menjadi ${targetBase}. Jumlah petak yang terarsir kini menjadi ${newNum}.`;
+                areaEl.innerHTML = renderTransformedGrid(den, num, "var(--accent)");
+            } else if (currentStep === 3) {
+                titleEl.innerText = "Langkah 3: Perbandingan Kesetaraan Visual";
+                descEl.innerText = `Bandingkan pecahan awal (${num}/${den}) dan pecahan baru (${newNum}/${targetBase}). Bentuk dan luas daerah arsirannya persis sama!`;
+                areaEl.innerHTML = `
+                    <div style="display:flex; gap:25px; align-items:center; flex-wrap:wrap; justify-content:center;">
+                        <div style="text-align:center;">
+                            <p style="margin-bottom:8px; font-weight:800;">Pecahan Awal (${num}/${den})</p>
+                            ${renderOriginalGrid(den, num, "var(--primary)", 150)}
+                        </div>
+                        <div style="font-size:2.5rem; font-weight:900; color:var(--primary);">=</div>
+                        <div style="text-align:center;">
+                            <p style="margin-bottom:8px; font-weight:800;">Pecahan Senilai (${newNum}/${targetBase})</p>
+                            ${renderTransformedGrid(den, num, "var(--accent)", 150)}
+                        </div>
+                    </div>
+                `;
+            } else if (currentStep === 4) {
+                titleEl.innerText = "Langkah 4: Konversi ke Bilangan Desimal";
+                descEl.innerText = `Pecahan per-${targetBase} langsung dapat kita tuliskan dalam bentuk bilangan desimal.`;
+                
+                let decVal = (newNum / targetBase).toString().replace('.', ',');
+                areaEl.innerHTML = `
+                    <div style="font-size: 2rem; font-weight: 900; color: var(--primary); background:#F1F5F9; padding:15px 30px; border-radius:12px; border:2px solid var(--border-color);">
+                        <span class="fraction-display"><span class="num">${num}</span><span class="den">${den}</span></span>
+                        = 
+                        <span class="fraction-display"><span class="num">${newNum}</span><span class="den">${targetBase}</span></span>
+                        = ${decVal}
+                    </div>
+                `;
+
+                absArea.style.display = 'block';
+                absText.innerHTML = `
+                    Aturan mengubah pecahan biasa ke bilangan desimal:<br>
+                    1. Kalikan pembilang dan penyebut dengan angka yang sama (<b>× ${multiplier}</b>) agar penyebut menjadi ${targetBase}.<br>
+                    2. <span class="fraction-display"><span class="num">${num} × ${multiplier}</span><span class="den">${den} × ${multiplier}</span></span> = 
+                       <span class="fraction-display"><span class="num">${newNum}</span><span class="den">${targetBase}</span></span> = <b>${decVal}</b>
+                `;
+            }
+        }
+
+        // Initial Initialization
+        initGrid1();
+        generateNewQuiz();
+        updateSec2Inputs();
+    </script>
+</body>
+</html>
