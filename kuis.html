@@ -1,0 +1,695 @@
+<!DOCTYPE html>
+<html lang="id">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Tarik Tambang Matematika - Mode Duel IFP</title>
+    <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500;600;700&family=Nunito:wght@700;800;900&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --red-team: #DC2626;
+            --red-hover: #B91C1C;
+            --red-bg: #FEF2F2;
+            --blue-team: #2563EB;
+            --blue-hover: #1D4ED8;
+            --blue-bg: #EFF6FF;
+            --bg-dark: #0F172A;
+            --card-dark: #1E293B;
+            --gold: #F59E0B;
+            --border-radius: 16px;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Nunito', sans-serif;
+            user-select: none;
+        }
+
+        body {
+            background-color: var(--bg-dark);
+            color: #F8FAFC;
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            overflow-x: hidden;
+        }
+
+        /* HEADER */
+        header {
+            background-color: var(--card-dark);
+            color: #FFFFFF;
+            text-align: center;
+            padding: 12px 20px;
+            border-bottom: 3px solid #334155;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.3);
+            position: relative;
+            z-index: 10;
+        }
+
+        h1 {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.8rem;
+            letter-spacing: 0.5px;
+            color: #FFFFFF;
+        }
+
+        .credit-badge {
+            display: inline-block;
+            background-color: #0F172A;
+            color: #F8FAFC;
+            padding: 4px 14px;
+            border-radius: 20px;
+            font-size: 0.85rem;
+            font-weight: 700;
+            margin-top: 4px;
+            border: 1px solid #475569;
+        }
+
+        /* DASHBOARD WELCOME SCREEN */
+        .dashboard-container {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            padding: 20px;
+            text-align: center;
+            z-index: 5;
+        }
+
+        .welcome-card {
+            background: var(--card-dark);
+            border: 2px solid #334155;
+            padding: 35px 30px;
+            border-radius: var(--border-radius);
+            max-width: 650px;
+            width: 100%;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.5);
+        }
+
+        .welcome-title {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 2.2rem;
+            color: var(--gold);
+            margin-bottom: 12px;
+        }
+
+        .rules-list {
+            text-align: left;
+            background: #0F172A;
+            padding: 18px 22px;
+            border-radius: 12px;
+            margin: 20px 0;
+            border-left: 4px solid var(--gold);
+            font-size: 0.95rem;
+            line-height: 1.6;
+        }
+
+        .btn-start {
+            background-color: var(--gold);
+            color: #0F172A;
+            font-family: 'Fredoka', sans-serif;
+            font-size: 1.5rem;
+            padding: 12px 36px;
+            border: none;
+            border-radius: 30px;
+            cursor: pointer;
+            transition: all 0.2s;
+            box-shadow: 0 4px 15px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-start:hover {
+            transform: scale(1.05);
+            background-color: #FBBF24;
+        }
+
+        /* COUNTDOWN OVERLAY */
+        .countdown-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .countdown-number {
+            font-family: 'Fredoka', sans-serif;
+            font-size: 8rem;
+            color: var(--gold);
+            animation: popIn 0.8s ease-out infinite;
+        }
+
+        @keyframes popIn {
+            0% { transform: scale(0.5); opacity: 0; }
+            50% { transform: scale(1.2); opacity: 1; }
+            100% { transform: scale(1); opacity: 1; }
+        }
+
+        /* GAME ARENA */
+        .game-arena {
+            display: none;
+            flex-direction: column;
+            flex: 1;
+            width: 100%;
+            max-width: 1100px;
+            margin: 0 auto;
+            padding: 10px 15px;
+        }
+
+        .tug-header-bar {
+            background: var(--card-dark);
+            padding: 12px 20px;
+            border-radius: var(--border-radius);
+            border: 2px solid #334155;
+            margin-bottom: 12px;
+        }
+
+        .team-info {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 10px;
+            font-family: 'Fredoka', sans-serif;
+        }
+
+        .badge-red { background: var(--red-team); color: white; padding: 4px 16px; border-radius: 20px; font-size: 1.1rem; }
+        .badge-blue { background: var(--blue-team); color: white; padding: 4px 16px; border-radius: 20px; font-size: 1.1rem; }
+
+        .tug-line-container {
+            position: relative;
+            height: 30px;
+            background: #0F172A;
+            border-radius: 15px;
+            border: 2px solid #475569;
+            display: flex;
+            align-items: center;
+            padding: 0 5px;
+        }
+
+        .rope {
+            position: absolute;
+            width: 100%;
+            height: 8px;
+            background: #D97706;
+            border-radius: 4px;
+        }
+
+        .tug-marker {
+            position: absolute;
+            width: 36px;
+            height: 36px;
+            background: var(--gold);
+            border: 3px solid #FFFFFF;
+            border-radius: 50%;
+            top: 50%;
+            left: 50%;
+            transform: translate(-50%, -50%);
+            transition: left 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.1rem;
+            box-shadow: 0 0 10px rgba(245, 158, 11, 0.8);
+        }
+
+        /* DUEL STAGE (Ringkas & Elegan) */
+        .duel-stage {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 15px;
+            flex: 1;
+        }
+
+        .player-box {
+            background: var(--card-dark);
+            border-radius: var(--border-radius);
+            padding: 15px;
+            display: flex;
+            flex-direction: column;
+            justify-content: space-between;
+            border: 2px solid transparent;
+        }
+
+        .box-red { border-color: var(--red-team); }
+        .box-blue { border-color: var(--blue-team); }
+
+        .question-card {
+            background: #0F172A;
+            border-radius: 12px;
+            padding: 15px;
+            text-align: center;
+            min-height: 90px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 12px;
+            border: 1px solid #334155;
+        }
+
+        .question-text {
+            font-size: 1.2rem;
+            font-weight: 800;
+            color: #F8FAFC;
+            line-height: 1.4;
+        }
+
+        .options-grid {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 10px;
+        }
+
+        .opt-btn {
+            background: #0F172A;
+            border: 2px solid #334155;
+            color: #F8FAFC;
+            padding: 12px 8px;
+            border-radius: 10px;
+            font-size: 1.05rem;
+            font-weight: 800;
+            cursor: pointer;
+            transition: all 0.15s ease;
+            text-align: center;
+        }
+
+        .box-red .opt-btn:hover { border-color: var(--red-team); background: #1F1924; }
+        .box-blue .opt-btn:hover { border-color: var(--blue-team); background: #172036; }
+
+        .box-red .opt-btn:active { background: var(--red-team); }
+        .box-blue .opt-btn:active { background: var(--blue-team); }
+
+        /* WINNER MODAL */
+        .modal-overlay {
+            position: fixed;
+            top: 0; left: 0; right: 0; bottom: 0;
+            background: rgba(15, 23, 42, 0.95);
+            display: none;
+            flex-direction: column;
+            align-items: center;
+            justify-content: center;
+            z-index: 100;
+        }
+
+        .modal-card {
+            background: var(--card-dark);
+            border: 2px solid #334155;
+            padding: 35px;
+            border-radius: 20px;
+            text-align: center;
+            max-width: 450px;
+            box-shadow: 0 10px 40px rgba(0,0,0,0.6);
+        }
+
+        /* CANVAS CONFETTI */
+        #confetti-canvas {
+            position: fixed;
+            top: 0; left: 0; width: 100%; height: 100%;
+            pointer-events: none;
+            z-index: 90;
+        }
+
+        /* FOOTER */
+        footer {
+            text-align: center;
+            padding: 10px;
+            color: #94A3B8;
+            font-weight: 700;
+            font-size: 0.85rem;
+            border-top: 1px solid #334155;
+            background: var(--bg-dark);
+            z-index: 10;
+        }
+    </style>
+</head>
+<body>
+
+    <canvas id="confetti-canvas"></canvas>
+
+    <header>
+        <h1>🪢 Tarik Tambang Matematika: Mode Duel</h1>
+        <div class="credit-badge">👨‍🏫 Dibuat oleh: Ikwan Wahyudi, S.Pd., M.Pd.</div>
+    </header>
+
+    <!-- DASHBOARD SELAMAT DATANG -->
+    <div class="dashboard-container" id="welcome-screen">
+        <div class="welcome-card">
+            <div class="welcome-title">Selamat Datang di Arena Duel! ⚔️</div>
+            <p style="color: #94A3B8; font-weight: 700;">Asesmen Formatif Interaktif: Pecahan & Desimal</p>
+
+            <div class="rules-list">
+                <b style="color: var(--gold); display: block; margin-bottom: 6px;">📜 Aturan Permainan Mode Duel:</b>
+                <ul style="margin-left: 18px;">
+                    <li>Tim Merah (Kiri) & Tim Biru (Kanan) menjawab soal secara terpisah.</li>
+                    <li><b>Jawaban Benar:</b> Tambang akan tertarik 1 langkah ke arah timmu!</li>
+                    <li><b>Jawaban Salah:</b> <span style="color:#FCA5A5;">Hati-hati!</span> Tambang otomatis tertarik ke arah lawan & terdengar suara ledakan! 💥</li>
+                    <li>Tim pertama yang berhasil menarik tambang hingga garis batas adalah pemenangnya!</li>
+                </ul>
+            </div>
+
+            <button class="btn-start" onclick="startCountdown()">🚀 Mulai Permainan</button>
+        </div>
+    </div>
+
+    <!-- COUNTDOWN OVERLAY -->
+    <div class="countdown-overlay" id="countdown-overlay">
+        <div class="countdown-number" id="countdown-text">5</div>
+        <p style="font-size: 1.5rem; font-weight: 800; color: #94A3B8; margin-top: 10px;">Bersiaplah...</p>
+    </div>
+
+    <!-- GAME ARENA -->
+    <div class="game-arena" id="game-arena">
+        <div class="tug-header-bar">
+            <div class="team-info">
+                <div class="badge-red">🔴 TIM MERAH</div>
+                <div style="font-weight: 800; color: var(--gold); font-size: 1.1rem;" id="score-text">Poin Seimbang</div>
+                <div class="badge-blue">🔵 TIM BIRU</div>
+            </div>
+            <div class="tug-line-container">
+                <div class="rope"></div>
+                <div class="tug-marker" id="tug-marker">🪢</div>
+            </div>
+        </div>
+
+        <div class="duel-stage">
+            <!-- TIM MERAH -->
+            <div class="player-box box-red">
+                <div style="font-weight: 800; color: #FCA5A5; margin-bottom: 8px;" id="q-num-red">Soal 1</div>
+                <div class="question-card">
+                    <div class="question-text" id="q-text-red">Loading...</div>
+                </div>
+                <div class="options-grid" id="opts-red"></div>
+            </div>
+
+            <!-- TIM BIRU -->
+            <div class="player-box box-blue">
+                <div style="font-weight: 800; color: #BFDBFE; margin-bottom: 8px;" id="q-num-blue">Soal 1</div>
+                <div class="question-card">
+                    <div class="question-text" id="q-text-blue">Loading...</div>
+                </div>
+                <div class="options-grid" id="opts-blue"></div>
+            </div>
+        </div>
+    </div>
+
+    <!-- WINNER MODAL -->
+    <div class="modal-overlay" id="winner-modal">
+        <div class="modal-card">
+            <div style="font-size: 4rem;" id="winner-emoji">🏆</div>
+            <h2 style="font-family: 'Fredoka', sans-serif; font-size: 2.2rem; margin: 10px 0;" id="winner-title">TIM MERAH MENANG!</h2>
+            <p style="color: #94A3B8; font-weight: 700; margin-bottom: 20px;" id="winner-desc">Berhasil menarik tambang sepenuhnya!</p>
+            <button class="btn-start" style="font-size: 1.2rem; padding: 10px 25px;" onclick="resetToDashboard()">🔄 Main Lagi</button>
+        </div>
+    </div>
+
+    <footer>
+        Media Pembelajaran Interaktif Matematika SD | Dibuat oleh: <b>Ikwan Wahyudi, S.Pd., M.Pd.</b>
+    </footer>
+
+    <script>
+        // BANK 20 SOAL
+        const masterQuestions = [
+            { q: "Pecahan 1/2 jika diubah ke desimal adalah...", opts: ["0,2", "0,5", "0,25", "0,05"], ans: 1 },
+            { q: "Pecahan 1/4 jika diubah ke desimal adalah...", opts: ["0,4", "0,14", "0,25", "0,75"], ans: 2 },
+            { q: "Pecahan 3/4 jika diubah ke desimal adalah...", opts: ["0,75", "0,34", "0,3", "0,43"], ans: 0 },
+            { q: "Pecahan 1/5 jika diubah ke desimal adalah...", opts: ["0,15", "0,5", "0,2", "0,02"], ans: 2 },
+            { q: "Pecahan 2/5 jika diubah ke desimal adalah...", opts: ["0,25", "0,4", "0,2", "0,52"], ans: 1 },
+            { q: "Pecahan 3/10 jika diubah ke desimal adalah...", opts: ["0,03", "0,3", "3,0", "0,33"], ans: 1 },
+            { q: "Pecahan 7/10 jika diubah ke desimal adalah...", opts: ["0,7", "0,07", "7,0", "0,17"], ans: 0 },
+            { q: "Tanda komparasi yang tepat: 0,4 ... 0,25", opts: [">", "<", "=", "<="], ans: 0 },
+            { q: "Tanda komparasi yang tepat: 0,15 ... 0,5", opts: [">", "<", "=", ">="], ans: 1 },
+            { q: "Tanda komparasi yang tepat: 1,2 ... 1,18", opts: ["<", "=", ">", "<="], ans: 2 },
+            { q: "Tanda komparasi yang tepat: 0,35 ... 0,350", opts: [">", "<", "=", "≠"], ans: 2 },
+            { q: "Tanda komparasi yang tepat: 2,05 ... 2,5", opts: ["<", ">", "=", ">="], ans: 0 },
+            { q: "Tanda komparasi yang tepat: 0,8 ... 0,79", opts: ["<", "=", ">", "<="], ans: 2 },
+            { q: "Tanda komparasi yang tepat: 0,06 ... 0,6", opts: [">", "<", "=", "≥"], ans: 1 },
+            { q: "Urutan TERKECIL ke TERBESAR: 0,3 ; 0,12 ; 0,5", opts: ["0,5 ; 0,3 ; 0,12", "0,12 ; 0,3 ; 0,5", "0,3 ; 0,12 ; 0,5", "0,12 ; 0,5 ; 0,3"], ans: 1 },
+            { q: "Urutan TERBESAR ke TERKECIL: 0,4 ; 0,25 ; 0,8", opts: ["0,8 ; 0,4 ; 0,25", "0,25 ; 0,4 ; 0,8", "0,4 ; 0,8 ; 0,25", "0,8 ; 0,25 ; 0,4"], ans: 0 },
+            { q: "Urutan TERKECIL ke TERBESAR: 1,2 ; 1,05 ; 1,15", opts: ["1,2 ; 1,15 ; 1,05", "1,05 ; 1,2 ; 1,15", "1,05 ; 1,15 ; 1,2", "1,15 ; 1,05 ; 1,2"], ans: 2 },
+            { q: "Urutan TERBESAR ke TERKECIL: 0,09 ; 0,9 ; 0,19", opts: ["0,9 ; 0,19 ; 0,09", "0,09 ; 0,19 ; 0,9", "0,19 ; 0,9 ; 0,09", "0,9 ; 0,09 ; 0,19"], ans: 0 },
+            { q: "Urutan TERKECIL ke TERBESAR: 2,4 ; 2,35 ; 2,5", opts: ["2,35 ; 2,5 ; 2,4", "2,35 ; 2,4 ; 2,5", "2,4 ; 2,35 ; 2,5", "2,5 ; 2,4 ; 2,35"], ans: 1 },
+            { q: "Urutan TERBESAR ke TERKECIL: 0,7 ; 0,75 ; 0,07", opts: ["0,75 ; 0,7 ; 0,07", "0,07 ; 0,7 ; 0,75", "0,7 ; 0,75 ; 0,07", "0,75 ; 0,07 ; 0,7"], ans: 0 }
+        ];
+
+        let redQuestions = [], blueQuestions = [];
+        let redIndex = 0, blueIndex = 0;
+        let tugPosition = 0; // -5 (Red Wins) to +5 (Blue Wins)
+        const MAX_PULL = 5;
+
+        // WEB AUDIO SYNTHESIZER SOUNDS
+        const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+        function playSuccessSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            const osc = audioCtx.createOscillator();
+            const gain = audioCtx.createGain();
+            osc.connect(gain);
+            gain.connect(audioCtx.destination);
+            osc.frequency.setValueAtTime(523.25, audioCtx.currentTime);
+            osc.frequency.setValueAtTime(659.25, audioCtx.currentTime + 0.1);
+            gain.gain.setValueAtTime(0.3, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.3);
+            osc.start();
+            osc.stop(audioCtx.currentTime + 0.3);
+        }
+
+        // SYNTHESIZED BOMB SOUND EFFECT
+        function playBombSound() {
+            if (audioCtx.state === 'suspended') audioCtx.resume();
+            
+            // Noise buffer
+            const bufferSize = audioCtx.sampleRate * 0.4;
+            const buffer = audioCtx.createBuffer(1, bufferSize, audioCtx.sampleRate);
+            const output = buffer.getChannelData(0);
+            for (let i = 0; i < bufferSize; i++) {
+                output[i] = Math.random() * 2 - 1;
+            }
+
+            const noise = audioCtx.createBufferSource();
+            noise.buffer = buffer;
+
+            const filter = audioCtx.createBiquadFilter();
+            filter.type = 'lowpass';
+            filter.frequency.setValueAtTime(600, audioCtx.currentTime);
+            filter.frequency.exponentialRampToValueAtTime(30, audioCtx.currentTime + 0.4);
+
+            const gain = audioCtx.createGain();
+            gain.gain.setValueAtTime(0.8, audioCtx.currentTime);
+            gain.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + 0.4);
+
+            noise.connect(filter);
+            filter.connect(gain);
+            gain.connect(audioCtx.destination);
+
+            noise.start();
+            noise.stop(audioCtx.currentTime + 0.4);
+        }
+
+        // CONFETTI ANIMATION SYSTEM
+        const canvas = document.getElementById('confetti-canvas');
+        const ctx = canvas.getContext('2d');
+        let particles = [];
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+        window.addEventListener('resize', resizeCanvas);
+        resizeCanvas();
+
+        function createConfetti() {
+            particles = [];
+            const colors = ['#F59E0B', '#DC2626', '#2563EB', '#10B981', '#EC4899'];
+            for (let i = 0; i < 100; i++) {
+                particles.push({
+                    x: Math.random() * canvas.width,
+                    y: Math.random() * canvas.height - canvas.height,
+                    size: Math.random() * 8 + 4,
+                    color: colors[Math.floor(Math.random() * colors.length)],
+                    vy: Math.random() * 3 + 2,
+                    vx: Math.random() * 2 - 1
+                });
+            }
+        }
+
+        function renderConfetti() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            particles.forEach(p => {
+                p.y += p.vy;
+                p.x += p.vx;
+                ctx.fillStyle = p.color;
+                ctx.fillRect(p.x, p.y, p.size, p.size);
+            });
+            particles = particles.filter(p => p.y < canvas.height);
+            if (particles.length > 0) requestAnimationFrame(renderConfetti);
+        }
+
+        function triggerConfetti() {
+            createConfetti();
+            renderConfetti();
+        }
+
+        // GAME LOGIC & RANDOMIZATION
+        function shuffleArray(arr) {
+            let array = [...arr];
+            for (let i = array.length - 1; i > 0; i--) {
+                const j = Math.floor(Math.random() * (i + 1));
+                [array[i], array[j]] = [array[j], array[i]];
+            }
+            return array;
+        }
+
+        function startCountdown() {
+            document.getElementById('welcome-screen').style.display = 'none';
+            const overlay = document.getElementById('countdown-overlay');
+            const cdText = document.getElementById('countdown-text');
+            overlay.style.display = 'flex';
+
+            let count = 5;
+            cdText.innerText = count;
+
+            const timer = setInterval(() => {
+                count--;
+                if (count > 0) {
+                    cdText.innerText = count;
+                } else {
+                    clearInterval(timer);
+                    overlay.style.display = 'none';
+                    initGame();
+                }
+            }, 1000);
+        }
+
+        function initGame() {
+            // Randomize soal secara independent untuk Tim Merah & Biru
+            redQuestions = shuffleArray(masterQuestions);
+            blueQuestions = shuffleArray(masterQuestions);
+            redIndex = 0;
+            blueIndex = 0;
+            tugPosition = 0;
+
+            document.getElementById('game-arena').style.display = 'flex';
+            updateRopeUI();
+            triggerConfetti();
+
+            loadQuestionRed();
+            loadQuestionBlue();
+        }
+
+        function loadQuestionRed() {
+            if (redIndex >= redQuestions.length) redIndex = 0; // Loop jika habis
+            const q = redQuestions[redIndex];
+            document.getElementById('q-num-red').innerText = `Soal ${redIndex + 1}`;
+            document.getElementById('q-text-red').innerText = q.q;
+
+            const optsBox = document.getElementById('opts-red');
+            optsBox.innerHTML = '';
+            q.opts.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'opt-btn';
+                btn.innerText = opt;
+                btn.onclick = () => answer('red', idx);
+                optsBox.appendChild(btn);
+            });
+        }
+
+        function loadQuestionBlue() {
+            if (blueIndex >= blueQuestions.length) blueIndex = 0;
+            const q = blueQuestions[blueIndex];
+            document.getElementById('q-num-blue').innerText = `Soal ${blueIndex + 1}`;
+            document.getElementById('q-text-blue').innerText = q.q;
+
+            const optsBox = document.getElementById('opts-blue');
+            optsBox.innerHTML = '';
+            q.opts.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'opt-btn';
+                btn.innerText = opt;
+                btn.onclick = () => answer('blue', idx);
+                optsBox.appendChild(btn);
+            });
+        }
+
+        function answer(team, selectedIdx) {
+            let isCorrect = false;
+
+            if (team === 'red') {
+                isCorrect = (selectedIdx === redQuestions[redIndex].ans);
+                if (isCorrect) {
+                    playSuccessSound();
+                    tugPosition--; // Tarik ke Merah
+                } else {
+                    playBombSound();
+                    tugPosition++; // SALAH -> Poin & Tambang otomatis ke Biru!
+                }
+                redIndex++;
+                loadQuestionRed();
+            } else {
+                isCorrect = (selectedIdx === blueQuestions[blueIndex].ans);
+                if (isCorrect) {
+                    playSuccessSound();
+                    tugPosition++; // Tarik ke Biru
+                } else {
+                    playBombSound();
+                    tugPosition--; // SALAH -> Poin & Tambang otomatis ke Merah!
+                }
+                blueIndex++;
+                loadQuestionBlue();
+            }
+
+            updateRopeUI();
+
+            if (Math.abs(tugPosition) >= MAX_PULL) {
+                endGame();
+            }
+        }
+
+        function updateRopeUI() {
+            const marker = document.getElementById('tug-marker');
+            const scoreText = document.getElementById('score-text');
+
+            // Conversion: position -5 (10%) to +5 (90%)
+            const percent = 50 + (tugPosition * 8);
+            marker.style.left = `${percent}%`;
+
+            if (tugPosition < 0) {
+                scoreText.innerText = `Tim Merah Unggul +${Math.abs(tugPosition)}`;
+            } else if (tugPosition > 0) {
+                scoreText.innerText = `Tim Biru Unggul +${tugPosition}`;
+            } else {
+                scoreText.innerText = `Poin Seimbang`;
+            }
+        }
+
+        function endGame() {
+            triggerConfetti();
+            const modal = document.getElementById('winner-modal');
+            const title = document.getElementById('winner-title');
+            const desc = document.getElementById('winner-desc');
+
+            modal.style.display = 'flex';
+
+            if (tugPosition < 0) {
+                title.innerText = "TIM MERAH MENANG! 🔴";
+                title.style.color = "var(--red-team)";
+                desc.innerText = "Selamat! Tim Merah berhasil menguasai tambang!";
+            } else {
+                title.innerText = "TIM BIRU MENANG! 🔵";
+                title.style.color = "var(--blue-team)";
+                desc.innerText = "Selamat! Tim Biru berhasil menguasai tambang!";
+            }
+        }
+
+        function resetToDashboard() {
+            document.getElementById('winner-modal').style.display = 'none';
+            document.getElementById('game-arena').style.display = 'none';
+            document.getElementById('welcome-screen').style.display = 'flex';
+        }
+    </script>
+</body>
+</html>
